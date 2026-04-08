@@ -1,0 +1,15 @@
+name: finops-env
+version: 1.0
+
+entry_point: env.py
+
+tasks:
+  - name: easy
+  - name: medium
+  - name: hard
+
+actions:
+  - reduce_vms
+  - increase_vms
+  - optimize_storage
+  - increase_cpu
