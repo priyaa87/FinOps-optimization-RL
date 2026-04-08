@@ -5,7 +5,6 @@ from agent import agent_action
 from grader import grade_performance
 
 def run_finops():
-    # Mandatory Header
     print("\n🚀 [START] FinOps Optimization Loop")
 
     # [STEP] Initializing environment
@@ -33,26 +32,26 @@ def run_finops():
     score = grade_performance(initial_cost, final_cost)
     print(f"🏆 Performance Score: {score}")
 
-    # [STEP] Calling AI model using OpenAI Client
+    # [STEP] Calling AI model
     print("[STEP] Calling AI model...")
 
-    # Fetching Mandatory Environment Variables
+    # Mandatory Hackathon Variables
     api_base = os.getenv("API_BASE_URL", "https://router.huggingface.co/hf-inference/v1")
     model_name = os.getenv("MODEL_NAME", "openai-community/gpt2")
     hf_token = os.getenv("HF_TOKEN") 
 
     if not hf_token:
-        print("❌ Error: HF_TOKEN missing in environment.")
+        print("❌ Error: HF_TOKEN missing in Settings.")
         return
 
     try:
-        # Initializing the Required OpenAI Client
+        # Rules ke mutabiq OpenAI client initialize karna
         client = OpenAI(base_url=api_base, api_key=hf_token)
 
         response = client.chat.completions.create(
             model=model_name,
             messages=[
-                {"role": "user", "content": f"Initial cost was {initial_cost}, final cost is {final_cost}. Suggest one FinOps tip."}
+                {"role": "user", "content": f"Initial cost {initial_cost}, final cost {final_cost}. Quick FinOps tip?"}
             ],
             max_tokens=50
         )
@@ -63,7 +62,6 @@ def run_finops():
     except Exception as e:
         print(f"⚠️  AI Model Error: {e}")
 
-    # Mandatory Footer
     print("\n🏁 [END]")
 
 if __name__ == "__main__":
