@@ -38,7 +38,7 @@ def run_finops():
 
     # Mandatory Hackathon Variables
     api_base = os.getenv("API_BASE_URL", "https://router.huggingface.co/hf-inference/v1")
-    model_name = os.getenv("MODEL_NAME", "openai-community/gpt2")
+    model_name = os.getenv("MODEL_NAME", "gpt2")
     hf_token = os.getenv("HF_TOKEN") 
 
     if not hf_token:
