@@ -1,10 +1,11 @@
 import os
-import requests
+from openai import OpenAI
 from env import FinOpsEnv
 from agent import agent_action
 from grader import grade_performance
 
 def run_finops():
+    # Mandatory Header
     print("\n🚀 [START] FinOps Optimization Loop")
 
     # [STEP] Initializing environment
@@ -32,47 +33,37 @@ def run_finops():
     score = grade_performance(initial_cost, final_cost)
     print(f"🏆 Performance Score: {score}")
 
-    # [STEP] Calling AI model
+    # [STEP] Calling AI model using OpenAI Client
     print("[STEP] Calling AI model...")
 
-    # Latest Stable Router URL
-    API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions"
-    
-    api_token = os.getenv('finops_ui')
-    if not api_token:
-        print("❌ Error: 'finops_ui' secret not found in Settings.")
+    # Fetching Mandatory Environment Variables
+    api_base = os.getenv("API_BASE_URL", "https://router.huggingface.co/hf-inference/v1")
+    model_name = os.getenv("MODEL_NAME", "openai-community/gpt2")
+    hf_token = os.getenv("HF_TOKEN") 
+
+    if not hf_token:
+        print("❌ Error: HF_TOKEN missing in environment.")
         return
 
-    headers = {
-        "Authorization": f"Bearer {api_token}",
-        "Content-Type": "application/json"
-    }
-
-    # Prompt and Payload for Chat Interface
-    prompt = f"FinOps Report: Initial Cost {initial_cost}, Final Cost {final_cost}. Suggest one quick optimization tip."
-    
-    payload = {
-        "model": "openai-community/gpt2",
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 50
-    }
-
     try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=15)
-        
-        if response.status_code == 200:
-            result = response.json()
-            # Extracting text from the chat completion response
-            ai_text = result['choices'][0]['message']['content']
-            print("\n🤖 [AI FEEDBACK]:")
-            print(ai_text.strip())
-        else:
-            print(f"⚠️  AI Model Error (Status {response.status_code}):")
-            print(f"Message: {response.text}")
+        # Initializing the Required OpenAI Client
+        client = OpenAI(base_url=api_base, api_key=hf_token)
+
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "user", "content": f"Initial cost was {initial_cost}, final cost is {final_cost}. Suggest one FinOps tip."}
+            ],
+            max_tokens=50
+        )
+
+        print("\n🤖 [AI FEEDBACK]:")
+        print(response.choices[0].message.content.strip())
 
     except Exception as e:
-        print(f"❌ Connection Error: {e}")
+        print(f"⚠️  AI Model Error: {e}")
 
+    # Mandatory Footer
     print("\n🏁 [END]")
 
 if __name__ == "__main__":
